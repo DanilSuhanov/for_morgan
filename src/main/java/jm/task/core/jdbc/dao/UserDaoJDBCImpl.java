@@ -13,20 +13,10 @@ public class UserDaoJDBCImpl implements UserDao {
 
     }
 
-    private Statement statement;
-
-    {
-        try {
-            statement = Util.getCon().createStatement();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public void createUsersTable() {
         String sql = "create TABLE IF NOT EXISTS users(Id INT PRIMARY KEY AUTO_INCREMENT, age INT, name VARCHAR(30), lastName VARCHAR(30));";
         try {
-            statement.executeUpdate(sql);
+            Util.getCon().prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -35,7 +25,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void dropUsersTable() {
         String sql = "drop table if exists users;";
         try {
-            statement.executeUpdate(sql);
+            Util.getCon().prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -44,7 +34,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void saveUser(String username, String lastName, byte age) {
         String sql = String.format("insert users (name, lastName, age) values ('%s', '%s', %d);", username, lastName, age);
         try {
-            statement.executeUpdate(sql);
+            Util.getCon().prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -65,7 +55,7 @@ public class UserDaoJDBCImpl implements UserDao {
         String sql = "select * from users;";
         List<User> userList = new ArrayList<>();
         try {
-            ResultSet resultSet = statement.executeQuery(sql);
+            ResultSet resultSet = Util.getCon().prepareStatement(sql).executeQuery();
             while (resultSet.next()) {
                 userList.add(new User(resultSet.getString(3), resultSet.getString(4), resultSet.getByte(2)));
             }
@@ -78,7 +68,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void cleanUsersTable() {
         String sql = "delete from users;";
         try {
-            statement.executeUpdate(sql);
+            Util.getCon().prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
