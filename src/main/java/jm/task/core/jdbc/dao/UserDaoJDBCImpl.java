@@ -7,15 +7,17 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
-
-    private Connection connection;
-    private Statement statement;
+public class UserDaoJDBCImpl implements UserDao {
 
     public UserDaoJDBCImpl() {
+
+    }
+
+    private Statement statement;
+
+    {
         try {
-            connection = DriverManager.getConnection(Util.getUrl(), Util.getUsername(), Util.getPassword());
-            statement = connection.createStatement();
+            statement = Util.getCon().createStatement();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -49,9 +51,11 @@ public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
     }
 
     public void removeUserById(long id) {
-        String sql = String.format("delete from users where id = %d;", id);
+        String sql = "delete from users where id = ?;";
         try {
-            statement.executeUpdate(sql);
+            PreparedStatement prepSt = Util.getCon().prepareStatement(sql);
+            prepSt.setLong(1, id);
+            prepSt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -78,10 +82,5 @@ public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-    }
-
-    @Override
-    public void close() throws Exception {
-        connection.close();
     }
 }
