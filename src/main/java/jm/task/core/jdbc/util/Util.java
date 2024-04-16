@@ -1,24 +1,27 @@
 package jm.task.core.jdbc.util;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.*;
+import java.util.Properties;
 
 public class Util {
 
-    private static final String URL = "jdbc:mysql://localhost/test";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "kadjitnichegonekral";
+    public static final String URL = "jdbc:mysql://localhost:3306/new_schema";
+    static Properties properties;
+    static String url;
+    static String username;
+    static String password;
 
-    private static Connection con;
-
-    static {
-        try {
-            con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public static Connection getCon() throws IOException, SQLException {
+        if (properties == null) {
+            properties = new Properties();
+            properties.load(new FileInputStream("database.properties"));
+            password = properties.getProperty("db.password");
+            url = properties.getProperty("db.url");
+            username = properties.getProperty("db.user");
         }
-    }
 
-    public static Connection getCon() {
-        return con;
+        return DriverManager.getConnection(url, username, password);
     }
 }
